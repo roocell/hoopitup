@@ -1,5 +1,5 @@
 # hoopitup
-raspberry pi project. add-on to driveway basketball hoop
+raspberry pi project. add-on to driveway basketball hoop.
 
 https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
 https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
