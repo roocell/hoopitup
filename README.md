@@ -4,6 +4,7 @@ raspberry pi project. add-on to driveway basketball hoop
 https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
 https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
 
+https://lindevs.com/install-github-cli-on-raspberry-pi/
 
 anker powercore 20100: 20100 mAh / 72.36 wh ; Output : 5V / 4.8A
 4.8A can power ~50 neopixels
@@ -49,3 +50,16 @@ audio hat uses
  - 12,21 for I2S (digital audio)
  - GPIO10 for SPI_MOSI (for LEDs) - so could use this
  - GPIO12 for a grove connector (which we're not using) - so could use this.
+11 pins to audio hat is sufficient, freeing up other raspi pins for other things.
+
+# have to use the grove connector on the audio hat to connect motion sensor
+https://wiki.seeedstudio.com/Grove_Systin
+https://www.electronicwings.com/raspberry-pi/raspberry-pi-i2c
+pin 1 - Yellow (for example, SCL on I2C Grove Connectors)
+pin 2 - White (for example, SDA on I2C Grove Connectors)
+pin 3 - Red - VCC on all Grove Connectors
+pin 4 - Black - GND on all Grove Connectors
+
+# detect i2c addresses
+sudo apt-get install -y i2c-tools
+sudo i2cdetect -y 1
