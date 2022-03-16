@@ -6,6 +6,12 @@ https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
 
 https://lindevs.com/install-github-cli-on-raspberry-pi/
 
+git config --global user.name roocell
+git config --global user.password <token>
+git config --global credential.helper cache
+git config --global credential.helper store
+git push
+
 anker powercore 20100: 20100 mAh / 72.36 wh ; Output : 5V / 4.8A
 4.8A can power ~50 neopixels
 
@@ -59,6 +65,9 @@ pin 1 - Yellow (for example, SCL on I2C Grove Connectors)
 pin 2 - White (for example, SDA on I2C Grove Connectors)
 pin 3 - Red - VCC on all Grove Connectors
 pin 4 - Black - GND on all Grove Connectors
+
+# motion sensor must be 3.3V
+https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/pinouts
 
 # detect i2c addresses
 sudo apt-get install -y i2c-tools
