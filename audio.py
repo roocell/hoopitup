@@ -1,11 +1,14 @@
 # sudo apt-get install vlc
 # sudo pip3 install python-vlc
-# to adjust audio: alsamixer
+# sudo pip3 install pyalsaaudio
+# to manually adjust audio: alsamixer
 
 import vlc
 import random
 import asyncio
 from logger import log as log
+import alsaaudio
+import os
 
 sounds = {}
 sounds["boom-2"] = "boom-2.mp3"
@@ -57,14 +60,40 @@ miss = (
     sounds["wild-shot"]
     )
 
+beep1 = "audio/beep1.wav"
+beep2 = "audio/beep2.wav"
+buzzer = "audio/buzzer.wav"
+
+# TODO: sometimes the sound doesn't play
 
 class Audio:
     def __init__(self):
-        self._score_audio = []
-        for s in score:
-            self._score_audio.append(vlc.MediaPlayer("audio/"+s))
+        scanCards = alsaaudio.cards()
+        log.debug("cards: {}".format(scanCards))
+        for card in scanCards:
+            scanMixers = alsaaudio.mixers(scanCards.index(card))
+            log.debug("mixers: {}".format(scanMixers))
 
-    def playScoreSound(self):
-        r = random.randrange(0, len(self._score_audio), 1)
+        m = alsaaudio.Mixer('Headphone')
+        m.setvolume(90) # range seems to be non-linear
+
+    async def play_scored_sound(self):
+        r = random.randrange(0, len(score)-1, 1)
         log.debug("playing {}".format(score[r]))
-        self._score_audio[r].play()
+        sound = vlc.MediaPlayer("audio/"+score[r])
+        sound.play()
+
+    async def play_missed_sound(self):
+        r = random.randrange(0, len(miss)-1, 1)
+        log.debug("playing {}".format(miss[r]))
+        sound = vlc.MediaPlayer("audio/"+miss[r])
+        sound.play()
+    async def play_beep1(self):
+        sound = vlc.MediaPlayer(beep1)
+        sound.play()
+    async def play_beep2(self):
+        sound = vlc.MediaPlayer(beep2)
+        sound.play()
+    async def play_buzzer(self):
+        sound = vlc.MediaPlayer(buzzer)
+        sound.play()

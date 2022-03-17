@@ -1,10 +1,9 @@
 # this file contains routines that will animate the neopixel box
-
-import time
 import board
 import neopixel
 import asyncio
 import sys
+from logger import log as log
 
 # tip: google "rgb color picker"
 
@@ -25,8 +24,15 @@ class NeoBox:
             self._pixels[self._offset+p] = (0,0,0)
         self._pixels.show()
 
+    def set(self, color_arr):
+        a = self._offset
+        for c in color_arr:
+            self._pixels[a] = c
+            a += 1
+        self._pixels.show()
+
     # this sends a trail of LEDs across the strip in the colour of fire
-    def fire_trail(self, duration, laps = 1):
+    async def fire_trail(self, duration, laps = 1):
         trail_len = 10
         colors = []
         for i in range(trail_len):
@@ -42,12 +48,12 @@ class NeoBox:
                 else:
                     self._pixels[self._offset+p] = (0,0,0)
                 self._pixels.show()
-                time.sleep(duration/self._num_pixels)
+                await asyncio.sleep(duration/self._num_pixels)
 
-    def red_box(self, timeout):
+    async def red_box(self, timeout):
         red = (255, 0, 0)
         for p in range(self._num_pixels):
             self._pixels[self._offset+p] = red
         self._pixels.show()
-        time.sleep(timeout)
+        await asyncio.sleep(timeout)
         self.clear()
