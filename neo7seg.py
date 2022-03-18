@@ -6,6 +6,8 @@
 import time
 import board
 import neopixel
+import asyncio
+from logger import log as log
 
 # the 7 seg is a series of 7 (4 pixel) segments
 # the order of segments is as follow
@@ -118,3 +120,26 @@ class Neo7Seg:
     # but this is here is case the app wants to get the current state of the 7seg(s)
     def get(self):
         return self._value
+
+    async def rainbow_digits(self, duration_sec):
+        log.debug("rainbox digits")
+        red = (255,0,0)
+        orange = (255,127,0)
+        yellow = (255,255,0)
+        green = (0,255,0)
+        blue = (0,0,255)
+        teal = (0,255,255)
+        violet = (148,0,211)
+        rb = [red, orange, yellow, green, blue, teal, violet]
+        start = t = time.monotonic()
+
+        i = 0
+        while time.monotonic() <= (start + duration_sec):
+            for d in range(self._num_digits):
+                for s in range(7):
+                    for p in range (0, pix_per_seg):
+                        self._pixels[self._offset + (d * pix_per_seg * 7) + (s * pix_per_seg) + p] = rb[(i + s) % 7]
+            i += 1
+            self._pixels.show()
+            await asyncio.sleep(0.05)
+        self.set(self._value)

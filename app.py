@@ -17,6 +17,7 @@ blue =      (0,   98,  255)
 yellow =    (255, 221, 0)
 black =     (0,   0,   0)
 purple =    (238, 0,   255)
+
 print_motion_data = False
 
 ############ GLOBAL APPDATA ##################
@@ -25,12 +26,14 @@ class app_data:
         self.switch = 13 # GPIO13
         self.mode_button = 17 # GPIO17
 
-        self.mpu_time = 0.1 # 100ms
+        self.mpu_time = 0.025 # 25 ms
         self.mpu_samples = 0
-        self.motion = sys.maxsize # instantaneous motion
-        self.motion_avg = 0 # averag motion
+        self.num_samples_for_avg = 4
         self.motion_acc = 0 # accumulator for avg
-        self.motion_settling_time = 3 # seconds
+        self.motion_limit = 115 # % of stable (last reading to declare motion)
+
+        self.motion = sys.maxsize # instantaneous motion
+        self.motion_settling_time = 2 # seconds to determine miss
         self.motion_settling_time_race = 0.5 # to prevent race condition
         self.modetimer = None
         self.last_switch_time = 0
@@ -69,8 +72,10 @@ class Timer:
 
 
 ##################### MOTION #############################
-def rim_moved():
-    log.debug("rim_moved time {}".format(time.monotonic()))
+def rim_moved(current, last, change_per):
+    log.debug("rim_moved time %.1f current %d last %d change_per %2.1f",
+        time.monotonic(),
+        current, last, change_per)
 
 async def rim_done_moving(repeat, timeout):
     delta = time.monotonic() - appd.last_switch_time
@@ -84,34 +89,49 @@ async def rim_done_moving(repeat, timeout):
         await game_mode_process_miss()
 
 async def mpu_timer(repeat, timeout):
-    # save power reading raw values
-    acc_x = mpu.read_raw_data(mpu.ACCEL_XOUT_H)
-    acc_y = mpu.read_raw_data(mpu.ACCEL_YOUT_H)
-    acc_z = mpu.read_raw_data(mpu.ACCEL_ZOUT_H)
-    gyro_x = mpu.read_raw_data(mpu.GYRO_XOUT_H)
-    gyro_y = mpu.read_raw_data(mpu.GYRO_YOUT_H)
-    gyro_z = mpu.read_raw_data(mpu.GYRO_ZOUT_H)
-    appd.mpu_samples += 1
+    # sometimes we may get a bus error which results in an exception
+    # we need to ignore this and continue taking samples
+    try:
+        # save power reading raw values
+        acc_x = mpu.read_raw_data(mpu.ACCEL_XOUT_H)
+        acc_y = mpu.read_raw_data(mpu.ACCEL_YOUT_H)
+        acc_z = mpu.read_raw_data(mpu.ACCEL_ZOUT_H)
+        gyro_x = mpu.read_raw_data(mpu.GYRO_XOUT_H)
+        gyro_y = mpu.read_raw_data(mpu.GYRO_YOUT_H)
+        gyro_z = mpu.read_raw_data(mpu.GYRO_ZOUT_H)
+    except Exception as e:
+        log.error(">>>>Error>>>> {} ".format(e))
+        Timer(appd.mpu_time, mpu_timer, True)
+        return
 
     # if values change by certain percentage, then decalre basket moved
     # but need to detect a change from stable state, then wait
-    rising_edge_per = 800 # if more than this, the basket has received a jolt
-    falling_edge_per = 5 # if less than this, the basket is settling down
 
-    motion = (abs(gyro_x) + abs(gyro_y) + abs(gyro_z))
+    #motion = (abs(gyro_x) + abs(gyro_y) + abs(gyro_z))
+    motion = (abs(acc_x) + abs(acc_y) + abs(acc_z))
     appd.motion_acc += motion
     appd.mpu_samples += 1
 
+    if appd.mpu_samples % appd.num_samples_for_avg == 0:
+        motion = appd.motion_acc / appd.num_samples_for_avg
+        appd.motion_acc = 0
+    else:
+        # take more samples before evaluating
+        Timer(appd.mpu_time, mpu_timer, True)
+        return
+
     # TODO: will need something smarter than this after experimenting on real hoop
     movement_detected = False
-    if motion > (appd.motion * rising_edge_per / 100):
+    if motion > (appd.motion * appd.motion_limit / 100):
         movement_detected = True
-        rim_moved()
+        rim_moved(motion, appd.motion, (motion * 100 / appd.motion))
 
     if print_motion_data == True:
-        log.debug("acc_x {}\t acc_y {}\t acc_z {}\t gyro_x {}\t gyro_y {}\t gyro_z {}\t motion {}\t appd.motion {}".format(
-            acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, motion, appd.motion
-        ))
+        change_per = (motion * 100 / appd.motion)
+        log.debug("ax %4d\t ay %6d\t az %3d\t gx %4d\t gy %4d\t gz %4d\t "
+            "m %d\t appd.m %d per %2.1f",
+            acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, motion, appd.motion, change_per
+        )
     appd.motion = motion
 
 
@@ -200,8 +220,8 @@ async def game_mode_process_make():
         # gather these two asynchronous functions so they run concurrently
         # defining the other functions as async and using "await asyncio.sleep()"
         # inside them, allow the mpu async timer to also run concurrently
-        appd.neo7seg.set(appd.makes, red)
-        await asyncio.gather(appd.neobox.fire_trail(0.25, 2), appd.audio.play_scored_sound())
+        #appd.neo7seg.set(appd.makes, red)
+        await asyncio.gather(appd.neobox.fire_trail(0.25, 2), appd.audio.play_scored_sound(), appd.neo7seg.rainbow_digits(3))
     elif appd.game_mode == GAME_MODE_SHOOTOUT:
         # count makes/misses on neobox
         log.debug("shootout make {}".format(appd.makes))
