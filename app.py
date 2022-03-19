@@ -39,7 +39,8 @@ class app_data:
         self.last_switch_time = 0
 
         # game config
-        self.game_started = False
+        self.game_is_starting_up = False # need this so a reset can't be done during starup sequence
+        self.game_started = False # need this so we dont count shots/misses before the game starts
         # shootout game config
         # makes on top of box
         # misses on bottom of box
@@ -164,7 +165,9 @@ game_modes = (
 # VS - vs mode
 #     ???
 async def shootout_display_per(repeat, timeout):
-    per = appd.makes*100/(appd.makes + appd.misses)
+    per = 0
+    if (appd.makes + appd.misses) > 0:
+        per = appd.makes*100/(appd.makes + appd.misses)
     appd.neo7seg.set(per, purple)
 
 async def shootout_timer(repeat, timeout):
@@ -184,6 +187,7 @@ async def shootout_timer(repeat, timeout):
         Timer(2, shootout_display_per, False)
 
 async def start_game_mode_shootout():
+    appd.game_is_starting_up = True
     appd.game_started = False
     appd.makes = 0
     appd.misses = 0
@@ -210,6 +214,7 @@ async def start_game_mode_shootout():
     appd.neo7seg.set(appd.countdown)
     appd.shootout_timer = Timer(1, shootout_timer, True)
     appd.game_started = True
+    appd.game_is_starting_up = False
 
 async def game_mode_process_make():
     if appd.game_started == False:
@@ -244,6 +249,7 @@ async def game_mode_process_miss():
 async def start_game_mode_shotcount():
     appd.makes = 0
     appd.neo7seg.set(appd.makes)
+    appd.game_is_starting_up = False
     appd.game_started = True
 
 game_start_funcs = {}
@@ -289,7 +295,10 @@ async def mode_button_event_async(channel):
     except Exception as e: log.error(">>>>Error>>>> {} ".format(e))
 
 def mode_button_event(channel):
-    asyncio.run_coroutine_threadsafe(mode_button_event_async(channel), appd.loop)
+    if appd.game_started == False and appd.game_is_starting_up == True:
+        log.debug("ignoring mode button")
+        return
+    return asyncio.run_coroutine_threadsafe(mode_button_event_async(channel), appd.loop)
 
 def game_mode_init():
     log.debug("setting gamemode {}".format(GAME_MODE_SHOOTOUT))
