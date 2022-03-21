@@ -64,6 +64,8 @@ lookup['Y'] = lookup['y'] = [4,6,0,1,2]
 lookup['Z'] = lookup['z'] = [5,0,6,3,2]
 lookup['-'] = [6]
 
+green = (0, 255, 0)
+
 # need a global in order to init neopixels first before instantiating this class
 pix_per_seg = 4
 def get_num_pixels(num_digits):
@@ -74,6 +76,8 @@ class Neo7Seg:
         self._pixels = pixels  # the already instantiated neopixel object
         self._offset = offset   # the stringing offset of the first pix in the neopixel chain
         self._num_digits = num_digits
+        self._value = "00"
+        self._color = green
         self.clear()
 
     def clear(self):
@@ -86,10 +90,10 @@ class Neo7Seg:
     # pixels = neopixels instantiated outside this function
     # offset = the offset for the first pixel in 7seg in the entire neopixel chain
     # value = character to display
-    # colour = (r,b,g)
-    green = (0, 255, 0)
-    def set(self, value, colour = green, wait = 0.5):
+    # color = (r,b,g)
+    def set(self, value, color = green, wait = 0.5):
         self._value = value
+        self._color = color
         self.clear()
 
         if isinstance(value, float):
@@ -109,7 +113,7 @@ class Neo7Seg:
             character = lookup[char]
             for s in character:
                 for p in range (0, pix_per_seg):
-                    self._pixels[self._offset + (c * pix_per_seg * 7) + (s * pix_per_seg) + p] = colour
+                    self._pixels[self._offset + (c * pix_per_seg * 7) + (s * pix_per_seg) + p] = color
             c += 1
         self._pixels.show()
 
@@ -142,4 +146,5 @@ class Neo7Seg:
             i += 1
             self._pixels.show()
             await asyncio.sleep(0.05)
-        self.set(self._value)
+        # restore previous setting after animation is done.
+        self.set(self._value, self._color)

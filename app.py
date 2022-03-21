@@ -225,7 +225,7 @@ async def game_mode_process_make():
         # gather these two asynchronous functions so they run concurrently
         # defining the other functions as async and using "await asyncio.sleep()"
         # inside them, allow the mpu async timer to also run concurrently
-        #appd.neo7seg.set(appd.makes, red)
+        appd.neo7seg.set(appd.makes, red)
         await asyncio.gather(appd.neobox.fire_trail(0.25, 2), appd.audio.play_scored_sound(), appd.neo7seg.rainbow_digits(3))
     elif appd.game_mode == GAME_MODE_SHOOTOUT:
         # count makes/misses on neobox

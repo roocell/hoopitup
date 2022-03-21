@@ -50,6 +50,10 @@ class NeoBox:
                 self._pixels.show()
                 await asyncio.sleep(duration/self._num_pixels)
 
+    # go up both sides and explode at the top
+    async def fireworks(self, duration):
+        log.debug("fireworks")
+
     async def red_box(self, timeout):
         red = (255, 0, 0)
         for p in range(self._num_pixels):
