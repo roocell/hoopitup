@@ -128,7 +128,9 @@ async def mpu_timer(repeat, timeout):
         rim_moved(motion, appd.motion, (motion * 100 / appd.motion))
 
     if print_motion_data == True:
-        change_per = (motion * 100 / appd.motion)
+        change_per = 0
+        if appd.motion > 0:
+            change_per = (motion * 100 / appd.motion)
         log.debug("ax %4d\t ay %6d\t az %3d\t gx %4d\t gy %4d\t gz %4d\t "
             "m %d\t appd.m %d per %2.1f",
             acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, motion, appd.motion, change_per
@@ -247,6 +249,8 @@ async def game_mode_process_miss():
         appd.neobox.set(appd.shootout_make_and_misses)
 
 async def start_game_mode_shotcount():
+    if isinstance(appd.shootout_timer, Timer):
+        appd.shootout_timer.cancel()
     appd.makes = 0
     appd.neo7seg.set(appd.makes)
     appd.game_is_starting_up = False
