@@ -25,6 +25,8 @@ class Motion:
         self.motion_settling_time_race = 0.5 # to prevent race condition
         self.rim_done_moving = rim_done_moving
 
+        self.IOError = False
+
         mpu.MPU_Init()
         timer.Timer(self.mpu_time, self.mpu_timer, True)
 
@@ -34,6 +36,15 @@ class Motion:
             current, last, change_per)
 
     async def mpu_timer(self, repeat, timeout):
+        try:
+            # we had an IOError last time - try to fix it.
+            if self.IOError:
+                mpu.MPU_Init()
+                # assume it worked. if still broken will get caught below
+                self.IOError = False
+        except Exception as e:
+            log.error(">>>>Error>>>> {} (still down)".format(e))
+
         # sometimes we may get a bus error which results in an exception
         # we need to ignore this and continue taking samples
         try:
@@ -46,7 +57,11 @@ class Motion:
             gyro_z = mpu.read_raw_data(mpu.GYRO_ZOUT_H)
         except Exception as e:
             log.error(">>>>Error>>>> {} ".format(e))
-            timer.Timer(self.mpu_time, self.mpu_timer, True)
+            # possible we lost power to the MPU
+            # wait a second longer than normal and set IOError so
+            # we will reinitialize next time
+            self.IOError = True
+            timer.Timer(self.mpu_time + 1, self.mpu_timer, True)
             return
 
         # if values change by certain percentage, then decalre basket moved

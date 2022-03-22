@@ -274,7 +274,7 @@ if __name__ == '__main__':
     # setup the GPIO (neopixel alreayd sets BCM mode)
     GPIO.setwarnings(True)
     GPIO.setup(appd.switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(appd.switch, GPIO.FALLING, callback=switch_event, bouncetime=1000)
+    GPIO.add_event_detect(appd.switch, GPIO.FALLING, callback=switch_event, bouncetime=2000)
 
     GPIO.setup(appd.mode_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(appd.mode_button, GPIO.BOTH, callback=mode_button_event, bouncetime=50)
