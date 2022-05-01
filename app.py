@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import time
 import board
 import neopixel
@@ -145,7 +146,7 @@ async def game_mode_process_make():
         # defining the other functions as async and using "await asyncio.sleep()"
         # inside them, allow the mpu async timer to also run concurrently
         appd.neo7seg.set(appd.makes, red)
-        await asyncio.gather(appd.neobox.fire_trail(0.25, 2), appd.audio.play_scored_sound(), appd.neo7seg.rainbow_digits(3))
+        await asyncio.gather(appd.neobox.fire_trail(0.25, 1), appd.audio.play_scored_sound(), appd.neo7seg.rainbow_digits(3))
     elif appd.game_mode == GAME_MODE_SHOOTOUT:
         # count makes/misses on neobox
         log.debug("shootout make {}".format(appd.makes))
@@ -180,6 +181,7 @@ game_start_funcs[GAME_MODE_SHOT_COUNT] = start_game_mode_shotcount
 ##########   MODE BUTTON ##################
 async def mode_detect(repeat, timeout):
     log.debug("game mode change")
+    await appd.audio.play_beep2()
     for m in range(len(game_modes)):
         if game_modes[m] == appd.game_mode:
             if m < (len(game_modes) - 1):
@@ -201,6 +203,7 @@ async def mode_button_event_async_exp(channel):
         # if rising edge - reset current mode
         log.debug("resetting")
         appd.neo7seg.set("--")
+        await appd.audio.play_beep1()
         time.sleep(1)
         await game_start_funcs[appd.game_mode]()
     else:
@@ -279,7 +282,13 @@ if __name__ == '__main__':
     GPIO.setup(appd.mode_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(appd.mode_button, GPIO.BOTH, callback=mode_button_event, bouncetime=50)
 
-    appd.motion = motion.Motion(rim_done_moving)
+    try:
+        appd.motion = motion.Motion(rim_done_moving)
+    except Exception as e:
+        # if the motion box isn't connected (or broken) we'll get here
+        log.error(">>>>Motion Module Error>>>> {} ".format(e))
+        appd.audio.play_sound(audio.buzzer)
+
 
     game_mode_init()
 

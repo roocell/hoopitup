@@ -60,9 +60,11 @@ miss = (
     sounds["wild-shot"]
     )
 
-beep1 = "audio/beep1.wav"
-beep2 = "audio/beep2.wav"
-buzzer = "audio/buzzer.wav"
+path = "/home/pi/hoopitup/audio/"
+
+beep1 = path + "beep1.wav"
+beep2 = path + "beep2.wav"
+buzzer = path + "buzzer.wav"
 
 # TODO: sometimes the sound doesn't play
 
@@ -80,13 +82,13 @@ class Audio:
     async def play_scored_sound(self):
         r = random.randrange(0, len(score)-1, 1)
         log.debug("playing {}".format(score[r]))
-        sound = vlc.MediaPlayer("audio/"+score[r])
+        sound = vlc.MediaPlayer(path + score[r])
         sound.play()
 
     async def play_missed_sound(self):
         r = random.randrange(0, len(miss)-1, 1)
         log.debug("playing {}".format(miss[r]))
-        sound = vlc.MediaPlayer("audio/"+miss[r])
+        sound = vlc.MediaPlayer(path + miss[r])
         sound.play()
     async def play_beep1(self):
         sound = vlc.MediaPlayer(beep1)
@@ -96,4 +98,7 @@ class Audio:
         sound.play()
     async def play_buzzer(self):
         sound = vlc.MediaPlayer(buzzer)
+        sound.play()
+    def play_sound(self, file):
+        sound = vlc.MediaPlayer(file)
         sound.play()

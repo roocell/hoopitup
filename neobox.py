@@ -5,10 +5,17 @@ import asyncio
 import sys
 from logger import log as log
 
+# neobox is a single line of neopixels in the shape of a rectangle
+# it goes clockwise and starts at the bottom right of the box
+# the rectangle is:
+neobox_height = 10  # neopixels high and
+neobox_width  = 20  # neopixels wide
+
+
 # tip: google "rgb color picker"
 
 # need a global in order to init neopixels first before instantiating this class
-num_pixels = 100
+num_pixels = 117
 def get_num_pixels():
     return num_pixels;
 
@@ -53,6 +60,11 @@ class NeoBox:
     # go up both sides and explode at the top
     async def fireworks(self, duration):
         log.debug("fireworks")
+        left_offset_start = neobox_width + neobox_height - 1
+        right_offset_start = num_pixels - 1
+
+        # left go up in index, but right would go down in index
+        
 
     async def red_box(self, timeout):
         red = (255, 0, 0)
