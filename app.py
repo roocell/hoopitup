@@ -11,6 +11,8 @@ import audio
 import timer
 import motion
 from logger import log as log
+import vl53l0x
+
 
 ### DEFINES ############################
 green =     (0,   255, 0)
@@ -251,6 +253,12 @@ def switch_event(channel):
 
 
 ######################## MAIN ##########################
+async def mainloop_timer(repeat, timeout):
+    # mostly for debugging things
+    timer.Timer(1, mainloop_timer, False)
+    #print("Range: {0}mm".format(appd.lidar.vl53.range))
+
+
 if __name__ == '__main__':
 
     # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
@@ -277,7 +285,7 @@ if __name__ == '__main__':
     # setup the GPIO (neopixel alreayd sets BCM mode)
     GPIO.setwarnings(True)
     GPIO.setup(appd.switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(appd.switch, GPIO.FALLING, callback=switch_event, bouncetime=2000)
+    #GPIO.add_event_detect(appd.switch, GPIO.FALLING, callback=switch_event, bouncetime=2000)
 
     GPIO.setup(appd.mode_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(appd.mode_button, GPIO.BOTH, callback=mode_button_event, bouncetime=50)
@@ -289,11 +297,16 @@ if __name__ == '__main__':
         log.error(">>>>Motion Module Error>>>> {} ".format(e))
         appd.audio.play_sound(audio.buzzer)
 
+    timer.Timer(0.03, mainloop_timer, True)
 
     game_mode_init()
 
     # run the event loop
     appd.loop = asyncio.get_event_loop()
+
+    # do this last because it will generate an interrupt right away
+    appd.lidar = vl53l0x.Lidar(switch_event_async)
+
     appd.loop.run_forever()
     appd.loop.close()
 
