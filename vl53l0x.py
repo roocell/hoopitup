@@ -11,6 +11,7 @@
 # https://github.com/pimoroni/VL53L0X-python/blob/master/python/VL53L0X.py
 # https://github.com/GrimbiXcode/VL53L0X-Register-Map
 # https://github.com/adafruit/Adafruit_CircuitPython_VL53L0X
+# https://community.st.com/s/question/0D50X0000C3AL5rSQG/can-i-cover-vl53l0x-time-of-flight-sensor-with-glass-for-protection
 
 # Hoop diameter is 18"
 # kids ball is 25.5" in circumference (~8.12" diameter)
@@ -31,7 +32,7 @@ import asyncio
 class Lidar:
     def __init__(self, callback):
         self.time = 0.025 # 25 ms
-        self.threshold = 305 # mm (12")
+        self.threshold = 400 # mm (12"=305)
         self.callback = callback
         self.last_reading = 9999
         self.debounce = 1 # second
@@ -45,7 +46,7 @@ class Lidar:
 
         # fastest it can go is 20ms
         # you lose accuracy when it's faster - but we dont care.
-        self.vl53.measurement_timing_budget = 20000
+        #self.vl53.measurement_timing_budget = 20000
 
         #self.configure_interrupt(350)
 
@@ -101,7 +102,10 @@ class Lidar:
 # The default timing budget is 33ms, a good compromise of speed and accuracy.
 
 if __name__ == '__main__':
-    vl53 = Lidar()
+    def int_cb():
+        log.debug("interrupt")
+
+    vl53 = Lidar(int_cb)
     # Main loop will read the range and print it every second.
 
     # with vl53.vl53.continuous_mode():

@@ -148,14 +148,14 @@ class VL53L0X:
         self._data_ready = False
         # Check identification registers for expected values.
         # From section 3.2 of the datasheet.
-        if (
-            self._read_u8(0xC0) != 0xEE
-            or self._read_u8(0xC1) != 0xAA
-            or self._read_u8(0xC2) != 0x10
-        ):
+        a = self._read_u8(0xC0)
+        b = self._read_u8(0xC1)
+        c = self._read_u8(0xC2)
+        if (a != 0xEE or b != 0xAA or c != 0x10):
             raise RuntimeError(
-                "Failed to find expected ID register values. Check wiring!"
+             "Failed to find expected ID register values. Check wiring! {} {} {}".format(hex(a),hex(b),hex(c))
             )
+            a = 1
         # Initialize access to the sensor.  This is based on the logic from:
         #   https://github.com/pololu/vl53l0x-arduino/blob/master/VL53L0X.cpp
         # Set I2C standard mode.

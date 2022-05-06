@@ -256,7 +256,7 @@ def switch_event(channel):
 async def mainloop_timer(repeat, timeout):
     # mostly for debugging things
     timer.Timer(1, mainloop_timer, False)
-    #print("Range: {0}mm".format(appd.lidar.vl53.range))
+    print("Range: {0}mm".format(appd.lidar.vl53.range))
 
 
 if __name__ == '__main__':
