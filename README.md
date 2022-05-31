@@ -6,12 +6,13 @@ https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
 
 https://lindevs.com/install-github-cli-on-raspberry-pi/
 
+```
 git config --global user.name roocell
 git config --global user.password <token>
 git config --global credential.helper cache
 git config --global credential.helper store
 git push
-
+```
 anker powercore 20100: 20100 mAh / 72.36 wh ; Output : 5V / 4.8A
 4.8A can power ~50 neopixels
 
