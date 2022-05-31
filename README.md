@@ -4,15 +4,18 @@ raspberry pi project. add-on to driveway basketball hoop
 https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
 https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
 
-https://lindevs.com/install-github-cli-on-raspberry-pi/
+https://lindevs.com/install-github-cli-on-raspberry-pi/<BR>
+goto github profile->settings->developer settings->personal access tokens->generate new token->select 'repo'<BR>
+```
+GITHUB_CLI_VERSION=$(curl -s "https://api.github.com/repos/cli/cli/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
+curl -Lo gh.deb "https://github.com/cli/cli/releases/latest/download/gh_${GITHUB_CLI_VERSION}_linux_armv6.deb"
+sudo dpkg -i gh.deb
+gh --version
+rm -rf gh.deb
+gh auth login
+```
+follow prompts, paste token, select 'yes' to log into git.
 
-```
-git config --global user.name roocell
-git config --global user.password <token>
-git config --global credential.helper cache
-git config --global credential.helper store
-git push
-```
 anker powercore 20100: 20100 mAh / 72.36 wh ; Output : 5V / 4.8A
 4.8A can power ~50 neopixels
 
@@ -38,7 +41,7 @@ https://www.digikey.ca/en/products/detail/adafruit-industries-llc/4037/9770512
 https://www.ihomeaudio.com/ibt72pc/
 
 Keystudio Mic Hat (similar to Adafruit's) https://wiki.keyestudio.com/Ks0314_keyestudio_ReSpeaker_2-Mic_Pi_HAT_V1.0
-- this doesn't have GPIO extensions so I'll have to mount to another PCB
+- this has I2C port and GPIO 12/13 on the grove connectors.
 - might have to power everything through this daughter board
   (not sure - had to run the install twice - seems to work powered via pi now)
 ```
