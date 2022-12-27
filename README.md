@@ -8,9 +8,9 @@ raspberry pi project. add-on to driveway basketball hoop<BR>
 <img src="hoop5.jpg" width="250">
 <img src="hoop6.jpg" width="250">
 
-[![Final video of fixing issues in your code in VS Code]
-(https://img.youtube.com/vi/JLMbpiywVxQ/maxresdefault.jpg)]
-(https://www.youtube.com/watch?v=JLMbpiywVxQ)
+[![demo]
+(demo.jpg)
+(https://www.youtube.com/shorts/Oc8pmvkcobQ)]
 
 https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
 https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
