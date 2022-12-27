@@ -1,5 +1,10 @@
 # hoopitup
 raspberry pi project. add-on to driveway basketball hoop
+![hardware](hoopitup.jpg)
+
+[![Final video of fixing issues in your code in VS Code]
+(https://img.youtube.com/vi/JLMbpiywVxQ/maxresdefault.jpg)]
+(https://www.youtube.com/watch?v=JLMbpiywVxQ)
 
 https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
 https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
