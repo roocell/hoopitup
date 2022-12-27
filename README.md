@@ -1,6 +1,12 @@
 # hoopitup
-raspberry pi project. add-on to driveway basketball hoop
-![hardware](hoopitup.jpg)
+raspberry pi project. add-on to driveway basketball hoop<BR>
+<img src="hoopitup.jpg" width="250">
+<img src="hoop1.jpg" width="250">
+<img src="hoop2.jpg" width="250">
+<img src="hoop3.jpg" width="250">
+<img src="hoop4.jpg" width="250">
+<img src="hoop5.jpg" width="250">
+<img src="hoop6.jpg" width="250">
 
 [![Final video of fixing issues in your code in VS Code]
 (https://img.youtube.com/vi/JLMbpiywVxQ/maxresdefault.jpg)]
