@@ -7,6 +7,7 @@ raspberry pi project. add-on to driveway basketball hoop<BR>
 <img src="hoop4.jpg" width="250">
 <img src="hoop5.jpg" width="250">
 <img src="hoop6.jpg" width="250">
+<img src="diagram.jpg" width="250">
 
 <BR> Demo Video <BR>
 <a href="https://www.youtube.com/shorts/Oc8pmvkcobQ"><img src="demo.jpg" alt="demo" width="250"></a>
